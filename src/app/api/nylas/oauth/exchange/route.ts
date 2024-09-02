@@ -1,6 +1,6 @@
+import { config, nylas } from "@/lib/nylas";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { config, nylas } from "../../route";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
