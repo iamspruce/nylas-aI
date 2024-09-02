@@ -36,7 +36,7 @@ export function MailList({ items }: MailListProps) {
                 </div>
                 <div
                   className={cn(
-                    "text-xs",
+                    "text-xs ml-4",
                     mail.selected === item.id
                       ? "text-foreground"
                       : "text-muted-foreground"
