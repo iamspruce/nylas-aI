@@ -16,6 +16,8 @@ SmartInbox is an AI-powered email assistant that helps you efficiently manage yo
 - [Node.js](https://nodejs.org/) (v14 or higher)
 - [Nylas API Key](https://nylas.com/) for email integration
 - [Anthropic API Key](https://www.anthropic.com/) for AI capabilities
+- [Hugging Face API Key](https://huggingface.co/) for embedding models
+- PostgreSQL database for storing user data and email embeddings
 
 ### Installation
 
@@ -26,6 +28,8 @@ SmartInbox is an AI-powered email assistant that helps you efficiently manage yo
    cd smartinbox
    ```
 
+````
+
 2. Install dependencies:
 
    ```bash
@@ -35,10 +39,22 @@ SmartInbox is an AI-powered email assistant that helps you efficiently manage yo
 3. Create a `.env` file in the root of the project and add your environment variables:
 
    ```plaintext
-   DATABASE_URL=your-database-url
-   NYLAS_API_SECRET=your-nylas-api-secret
-   NYLAS_API_URI=your-nylas-api-uri
+   DATABASE_URL=postgresql://username:password@hostname:port/database?sslmode=require
+
+   AUTH_SECRET=your-auth-secret
+
+   GOOGLE_ID=your-google-client-id
+   GOOGLE_SECRET=your-google-client-secret
+
    ANTHROPIC_API_KEY=your-anthropic-api-key
+   HUGGINGFACE_API_KEY=your-huggingface-api-key
+
+   NYLAS_API_SECRET=your-nylas-api-secret
+   NYLAS_CLIENT_ID=your-nylas-client-id
+   NYLAS_REDIRECT_URI=api/nylas/oauth/exchange
+   NYLAS_GRANT_ID=your-nylas-grant-id
+   NYLAS_API_URI=https://api.us.nylas.com
+   BASE_URL=http://localhost:3000
    ```
 
 4. Run database migrations:
@@ -90,4 +106,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-If you have any questions or feedback, feel free to reach out at [your-email@example.com](mailto:your-email@example.com).
+If you have any questions or feedback, feel free to reach out at [spruceemmanuel@gmail.com](mailto:your-email@example.com).
+
+````
