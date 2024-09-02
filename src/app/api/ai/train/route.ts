@@ -1,26 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Prisma, Document } from "@prisma/client";
-import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/hf_transformers";
-import { PrismaVectorStore } from "@langchain/community/vectorstores/prisma";
 import { prisma } from "@/lib/prisma";
-
-// Initialize Hugging Face embedding model
-const embeddingModel = new HuggingFaceTransformersEmbeddings({
-  model: "Xenova/all-MiniLM-L6-v2",
-});
-
-export const vectorStore = PrismaVectorStore.withModel<Document>(prisma).create(
-  embeddingModel,
-  {
-    prisma: Prisma,
-    tableName: "Document",
-    vectorColumnName: "vector",
-    columns: {
-      id: PrismaVectorStore.IdColumn,
-      content: PrismaVectorStore.ContentColumn,
-    },
-  }
-);
+import { embeddingModel, vectorStore } from "@/lib/vectorStore";
 
 // Function to fetch dataset from Hugging Face
 async function fetchDataset(url: string) {

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { ChatAnthropic } from "@langchain/anthropic";
 import { HumanMessage } from "@langchain/core/messages";
-import { vectorStore } from "../train/route";
+import { vectorStore } from "@/lib/vectorStore";
 
 const llm = new ChatAnthropic({
   model: "claude-3-haiku-20240307",
@@ -18,7 +18,9 @@ export async function POST(request: Request) {
     const results = await vectorStore.similaritySearch(prompt, 5);
 
     // Combine the retrieved documents into a single context for the prompt
-    const context = results.map((result) => result.metadata.content).join("\n");
+    const context = results
+      .map((result: any) => result.metadata.content)
+      .join("\n");
 
     // Incorporate the context into the prompt for the language model
     const fullPrompt = `Context: ${context}\n\nQuestion: ${prompt}`;
