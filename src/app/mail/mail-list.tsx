@@ -1,36 +1,34 @@
 import { ComponentProps } from "react";
 import { formatDistanceToNow } from "date-fns";
+import { Mail } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { useMail } from "./use-mail";
 import { MailListProps } from "./types";
 
 export function MailList({ items }: MailListProps) {
   const [mail, setMail] = useMail();
-  console.log(items);
 
   return (
-    <ScrollArea className="h-screen">
-      <div className="flex flex-col gap-2 p-4 pt-0">
-        {items.map((item) => (
-          <button
-            key={item.id}
-            className={cn(
-              "flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent",
-              mail.selected === item.id && "bg-muted"
-            )}
-            onClick={() =>
-              setMail({
-                ...mail,
-                selected: item.id,
-              })
-            }
-          >
-            <div className="flex w-full flex-col gap-1">
-              <div className="flex items-center">
+    <ScrollArea className="h-[calc(100vh-10rem)] rounded-md border">
+      <div className="p-4">
+        <h2 className="mb-4 text-xl font-semibold">Inbox</h2>
+        {items.map((item, index) => (
+          <div key={item.id}>
+            {index > 0 && <Separator className="my-2" />}
+            <button
+              className={cn(
+                "flex w-full flex-col gap-2 rounded-lg p-3 text-left text-sm transition-all hover:bg-accent",
+                mail.selected === item.id && "bg-muted"
+              )}
+              onClick={() => setMail({ ...mail, selected: item.id })}
+            >
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
                   <div className="font-semibold">{item.name}</div>
                   {!item.read && (
                     <span className="flex h-2 w-2 rounded-full bg-blue-600" />
@@ -38,7 +36,7 @@ export function MailList({ items }: MailListProps) {
                 </div>
                 <div
                   className={cn(
-                    "ml-auto text-xs",
+                    "text-xs",
                     mail.selected === item.id
                       ? "text-foreground"
                       : "text-muted-foreground"
@@ -50,20 +48,23 @@ export function MailList({ items }: MailListProps) {
                 </div>
               </div>
               <div className="text-xs font-medium">{item.subject}</div>
-            </div>
-            <div className="line-clamp-2 text-xs text-muted-foreground">
-              {item.text.substring(0, 300)}
-            </div>
-            {item.labels.length ? (
-              <div className="flex items-center gap-2">
-                {item.labels.map((label) => (
-                  <Badge key={label} variant={getBadgeVariantFromLabel(label)}>
-                    {label}
-                  </Badge>
-                ))}
+              <div className="line-clamp-2 text-xs text-muted-foreground">
+                {item.text.substring(0, 150)}...
               </div>
-            ) : null}
-          </button>
+              {item.labels.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2">
+                  {item.labels.map((label) => (
+                    <Badge
+                      key={label}
+                      variant={getBadgeVariantFromLabel(label)}
+                    >
+                      {label}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </button>
+          </div>
         ))}
       </div>
     </ScrollArea>

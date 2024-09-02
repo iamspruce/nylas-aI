@@ -15,7 +15,7 @@ const nylas = new Nylas({
 async function fetchEmails(grantId: string): Promise<MailType[]> {
   try {
     const queryParams = {
-      limit: 10,
+      limit: 20,
     };
 
     const messages = await nylas.messages.list({
