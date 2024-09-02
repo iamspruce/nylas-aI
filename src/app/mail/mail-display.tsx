@@ -1,7 +1,8 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, Send } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { MailDisplayProps } from "./types";
 
@@ -21,6 +23,8 @@ export function MailDisplay({ mail }: MailDisplayProps) {
   const [smartReply, setSmartReply] = useState<string>("");
   const [summary, setSummary] = useState<string>("");
   const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
+  const [isGeneratingReply, setIsGeneratingReply] = useState(false);
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -51,22 +55,24 @@ export function MailDisplay({ mail }: MailDisplayProps) {
         description: "Failed to generate text. Please try again later.",
         variant: "destructive",
       });
-      return null; // Return null in case of an error
+      return null;
     }
   };
 
   const generateSmartReply = async () => {
-    const prompt = `Generate a smart reply for an email from ${mail!.name} (${
-      mail!.email
-    }) regarding "${mail!.subject}".`;
+    setIsGeneratingReply(true);
+    const prompt = `Generate a smart reply for an email from ${mail?.name} (${mail?.email}) regarding "${mail?.subject}".`;
     const reply = await generateText(prompt);
     if (reply) setSmartReply(reply);
+    setIsGeneratingReply(false);
   };
 
   const generateSummary = async () => {
-    const prompt = `Summarize the following email content:\n\n${mail!.text}`;
+    setIsGeneratingSummary(true);
+    const prompt = `Summarize the following email content:\n\n${mail?.text}`;
     const summary = await generateText(prompt);
     if (summary) setSummary(summary);
+    setIsGeneratingSummary(false);
   };
 
   if (!mail) {
@@ -79,7 +85,7 @@ export function MailDisplay({ mail }: MailDisplayProps) {
 
   return (
     <ScrollArea className="h-full">
-      <div className="flex mb-4 flex-col p-4">
+      <div className="flex flex-col p-4 space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-4">
             <Avatar>
@@ -101,15 +107,14 @@ export function MailDisplay({ mail }: MailDisplayProps) {
 
         <Separator />
 
-        <h3 className="my-4 text-xl font-semibold">{mail.subject}</h3>
-        <Separator />
+        <h3 className="text-xl font-semibold">{mail.subject}</h3>
 
         <Collapsible
           open={isSummaryExpanded}
           onOpenChange={setIsSummaryExpanded}
-          className="mt-4 space-y-2"
+          className="space-y-2"
         >
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-between">
             <h4 className="text-sm font-semibold">Summary</h4>
             <CollapsibleTrigger asChild>
               <Button variant="ghost" size="sm">
@@ -118,31 +123,54 @@ export function MailDisplay({ mail }: MailDisplayProps) {
                 ) : (
                   <ChevronDown className="h-4 w-4" />
                 )}
+                <span className="sr-only">Toggle summary</span>
               </Button>
             </CollapsibleTrigger>
           </div>
           <CollapsibleContent>
-            <div className="rounded-md bg-muted p-4">
-              <pre className="text-sm whitespace-pre-wrap">{summary}</pre>
-            </div>
+            {isGeneratingSummary ? (
+              <Skeleton className="h-20 w-full" />
+            ) : (
+              <div className="rounded-md bg-muted p-4">
+                <p className="text-sm whitespace-pre-wrap">{summary}</p>
+              </div>
+            )}
           </CollapsibleContent>
         </Collapsible>
 
-        <Separator className="my-4" />
+        <Separator />
 
-        <div className="mt-4 whitespace-pre-wrap text-sm">{mail.text}</div>
+        <div className="whitespace-pre-wrap text-sm">{mail.text}</div>
 
-        <Separator className="my-4" />
+        <Separator />
 
-        <div className="mt-4">
-          <Textarea
-            placeholder="Type your reply..."
-            value={smartReply}
-            onChange={(e) => setSmartReply(e.target.value)}
-            rows={6}
-          />
-          <div className="mt-2 flex justify-end">
-            <Button>Send Reply</Button>
+        <div className="space-y-2">
+          <h4 className="text-sm font-semibold">Smart Reply</h4>
+          {isGeneratingReply ? (
+            <Skeleton className="h-24 w-full" />
+          ) : (
+            <Textarea
+              placeholder="Type your reply..."
+              value={smartReply}
+              onChange={(e) => setSmartReply(e.target.value)}
+              rows={6}
+            />
+          )}
+          <div className="flex justify-end space-x-2">
+            <Button
+              variant="outline"
+              onClick={generateSmartReply}
+              disabled={isGeneratingReply}
+            >
+              {isGeneratingReply && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Regenerate
+            </Button>
+            <Button disabled={isGeneratingReply}>
+              <Send className="mr-2 h-4 w-4" />
+              Send Reply
+            </Button>
           </div>
         </div>
       </div>
