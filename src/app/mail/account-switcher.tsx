@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface AccountSwitcherProps {
   isCollapsed: boolean;
@@ -56,7 +57,9 @@ export function AccountSwitcher({
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
-        <Button variant={"ghost"}>Switch Account</Button>
+        <Button variant={"ghost"} asChild>
+          <Link href={"/api/auth/signout"}>Switch Account</Link>
+        </Button>
       </SelectContent>
     </Select>
   );
